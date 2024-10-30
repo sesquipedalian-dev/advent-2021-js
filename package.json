@@ -1,0 +1,14 @@
+{
+  "name": "advent-2021",
+  "version": "1.0.0",
+  "description": "'advent'",
+  "main": "index.js",
+  "scripts": {
+    "day1" : "node day1/day1.js"
+  },
+  "author": "Scott Agnew",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.7"
+  }
+}
