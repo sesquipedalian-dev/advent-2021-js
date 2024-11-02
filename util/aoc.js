@@ -50,3 +50,9 @@ export const fetchDayInput = (year, day) => {
 //     // console.log('m2', m);
 //     console.log('m', [...matches]);
 // })
+
+// fetchDayAnswers(2024, 1).then(matches => { 
+//     console.log('oh, here are matches', matches);
+// }).catch(err => {
+//     console.log('not ready yet')
+// })
