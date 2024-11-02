@@ -20,7 +20,7 @@ const part2 = () => {
 
 
 fetchDayCodes('{year}', '{day}').then(codes => { 
-    // console.log('all the codes', codes);
+    // console.log('all the codes', codes.map((c, i) => [c, i]));
     // return;
 
     const sample1 = codes[0].split("\\n").map(n => parseInt(n)).filter(n => n > 0);
@@ -32,11 +32,11 @@ fetchDayCodes('{year}', '{day}').then(codes => {
         return;
     }
 
-    const part2Answer = part2(sample1);
-    if (part2Answer != codes[26]) {
-        console.log('failed on part 2 test case', part2Answer, codes[26]);
-        return;
-    }
+    // const part2Answer = part2(sample1);
+    // if (part2Answer != codes[26]) {
+    //     console.log('failed on part 2 test case', part2Answer, codes[26]);
+    //     return;
+    // }
 
     Promise.all([fetchDayInput('{year}', '{day}'), fetchDayAnswers('{year}', '{day}')]).then(([input, answers]) => {
 
@@ -48,12 +48,12 @@ fetchDayCodes('{year}', '{day}').then(codes => {
         }
         console.log('part 1 answer', answer2, answer2Right);
 
-        const answer3 = part2(list_of_ints);
-        let answer3Right;
-        if (answers.length > 1) { 
-            answer3Right = answers[1] == answer3.toString();
-        }
-        console.log('part 2 answer', answer3, answer3Right);
+        // const answer3 = part2(list_of_ints);
+        // let answer3Right;
+        // if (answers.length > 1) { 
+        //     answer3Right = answers[1] == answer3.toString();
+        // }
+        // console.log('part 2 answer', answer3, answer3Right);
     });
 })
 
