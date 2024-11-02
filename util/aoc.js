@@ -31,12 +31,12 @@ const authHeader = async () => {
 
 export const fetchDayCodes = (year, day) => {
     const url = `https://adventofcode.com/${year}/day/${day}`;
-    return axiosInstance.get(url, null, {headers: authHeader()}).then(({data}) => data.matchAll(codeBlocksRegex).map(m => m[1]));
+    return axiosInstance.get(url, null, {headers: authHeader()}).then(({data}) => [...data.matchAll(codeBlocksRegex).map(m => m[1])]);
 };
 
 export const fetchDayAnswers = (year, day) => { 
     const url = `https://adventofcode.com/${year}/day/${day}`;
-    return axiosInstance.get(url, null, {headers: authHeader()}).then(({data}) => data.matchAll(answersRegex).map(m => m[1]));
+    return axiosInstance.get(url, null, {headers: authHeader()}).then(({data}) => [...data.matchAll(answersRegex).map(m => m[1])]);
 };
 
 export const fetchDayInput = (year, day) => { 
@@ -44,9 +44,9 @@ export const fetchDayInput = (year, day) => {
     return axiosInstance.get(url, null,  {headers: authHeader()}).then(({data}) => data)
 };
 
-// testing
+// // testing
 // fetchDayAnswers(2021, 1).then(matches => {
-//     const m = matches.next();
-//     console.log('m2', m);
-//     // console.log('m', [...matches]);
+//     // const m = matches.next();
+//     // console.log('m2', m);
+//     console.log('m', [...matches]);
 // })

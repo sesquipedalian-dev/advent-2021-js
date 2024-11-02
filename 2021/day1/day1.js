@@ -1,6 +1,6 @@
 
-import {fetchDayCodes, fetchDayInput, fetchDayAnswers} from '../util/aoc.js';
-import {stringListToFirstInt} from './util.js';
+import {fetchDayCodes, fetchDayInput, fetchDayAnswers} from '../../util/aoc.js';
+import {stringListToFirstInt} from './utils.js';
 
 const part1 = (list_of_ints) => {
     var count = 0;
@@ -27,11 +27,8 @@ const part2 = (list_of_ints) => {
 
 
 fetchDayCodes('2021', '1').then(codes => { 
-    // console.log('all the codes', [...codes].map((m, i) => [m[0], i]));
-
-    const sample1 = codes.next().value.split("\n").map(n => parseInt(n)).filter(n => n > 0);
-    const answer = [...codes];
-    const p1Answer = answer[5];
+    const sample1 = codes[0].split("\n").map(n => parseInt(n)).filter(n => n > 0);
+    const p1Answer = codes[6];
     const samplePart1Answer = part1(sample1);
 
     if(samplePart1Answer != p1Answer) { 
@@ -40,13 +37,12 @@ fetchDayCodes('2021', '1').then(codes => {
     }
 
     const part2Answer = part2(sample1);
-    if (part2Answer != answer[25]) {
-        console.log('failed on part 2 test case', part2Answer, answer[25]);
+    if (part2Answer != codes[26]) {
+        console.log('failed on part 2 test case', part2Answer, codes[26]);
         return;
     }
 
-    Promise.all([fetchDayInput('2021', '1'), fetchDayAnswers('2021', '1')]).then(([input, answersIter]) => {
-        const answers = [...answersIter];
+    Promise.all([fetchDayInput('2021', '1'), fetchDayAnswers('2021', '1')]).then(([input, answers]) => {
         const list_of_ints = stringListToFirstInt(input.split("\n"));
         const answer2 = part1(list_of_ints);
         let answer2Right;

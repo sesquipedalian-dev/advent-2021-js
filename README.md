@@ -16,9 +16,10 @@ npm run day1
 
 # structure
 
-- dayX
-  - dayX.js (impl of the day's puzzle)
-  - utils.js (reusable functions copied from day to day)
+- yearY
+  - dayX
+    - dayX.js (impl of the day's puzzle)
+    - utils.js (reusable functions copied from day to day)
 - util
   - utils.js (consolidated reusable functions?)
   - aoc.js (scraper / fetch stuff from the aoc website)

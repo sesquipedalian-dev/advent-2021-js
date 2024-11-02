@@ -4,7 +4,7 @@
   "description": "'advent'",
   "main": "index.js",
   "scripts": {
-    "day1" : "node day1/day1.js"
+    "2021day1" : "node 2021/day1/day1.js"
   },
   "author": "Scott Agnew",
   "license": "MIT",
