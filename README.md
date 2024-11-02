@@ -23,6 +23,7 @@ npm run day1
 - util
   - utils.js (consolidated reusable functions?)
   - aoc.js (scraper / fetch stuff from the aoc website)
+  - template.js (template and function to create a new day)
 - README.md (this file)
 - LICENSE (This project is [MIT licensed](https://choosealicense.com/licenses/mit/))
 - token.txt (store the cookie value from the advent of code site in this file for use in downloading inputs)
