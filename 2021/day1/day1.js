@@ -1,5 +1,5 @@
 
-import {fetchDayCodes, fetchDayInput, fetchDayAnswers} from '../../util/aoc.js';
+import aoc from '../../util/aoc.js';
 import {stringListToFirstInt} from './utils.js';
 
 const part1 = (list_of_ints) => {
@@ -26,7 +26,7 @@ const part2 = (list_of_ints) => {
 }
 
 
-fetchDayCodes('2021', '1').then(codes => { 
+aoc.fetchDayCodes('2021', '1').then(codes => { 
     const sample1 = codes[0].split("\n").map(n => parseInt(n)).filter(n => n > 0);
     const p1Answer = codes[6];
     const samplePart1Answer = part1(sample1);
@@ -42,7 +42,7 @@ fetchDayCodes('2021', '1').then(codes => {
         return;
     }
 
-    Promise.all([fetchDayInput('2021', '1'), fetchDayAnswers('2021', '1')]).then(([input, answers]) => {
+    Promise.all([aoc.fetchDayInput('2021', '1'), aoc.fetchDayAnswers('2021', '1')]).then(([input, answers]) => {
         const list_of_ints = stringListToFirstInt(input.split("\n"));
         const answer2 = part1(list_of_ints);
         let answer2Right;

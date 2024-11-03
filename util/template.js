@@ -7,8 +7,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const template = `
-import {fetchDayCodes, fetchDayInput, fetchDayAnswers} from '../../util/aoc.js';
-import {stringListToFirstInt} from './utils.js';
+import aoc from '../../util/aoc.js';
+import utils from './utils.js';
 
 const part1 = () => {
     return null;
@@ -19,7 +19,7 @@ const part2 = () => {
 }
 
 
-fetchDayCodes('{year}', '{day}').then(codes => { 
+aoc.fetchDayCodes('{year}', '{day}').then(codes => { 
     // console.log('all the codes', codes.map((c, i) => [c, i]));
     // return;
 
@@ -38,9 +38,9 @@ fetchDayCodes('{year}', '{day}').then(codes => {
     //     return;
     // }
 
-    Promise.all([fetchDayInput('{year}', '{day}'), fetchDayAnswers('{year}', '{day}')]).then(([input, answers]) => {
+    Promise.all([aoc.fetchDayInput('{year}', '{day}'), aoc.fetchDayAnswers('{year}', '{day}')]).then(([input, answers]) => {
 
-        const list_of_ints = stringListToFirstInt(input.split("\\n"));
+        const list_of_ints = utils.stringListToFirstInt(input.split("\\n"));
         const answer2 = part1(list_of_ints);
         let answer2Right;
         if (answers.length > 0) { 

@@ -1,6 +1,6 @@
 
-import {fetchDayCodes, fetchDayInput, fetchDayAnswers} from '../../util/aoc.js';
-import {stringListToFirstInt} from './utils.js';
+import aoc from '../../util/aoc.js';
+import utils from './utils.js';
 
 const part1 = (list) => {
     const sequenceLength = list[0].length;
@@ -23,7 +23,7 @@ const part1 = (list) => {
             }
         });
         return nextAccum;
-    }, [...Array(sequenceLength)].map(() => { return {ones: 0, zeroes: 0}}));
+    }, utils.initArray(sequenceLength, () => { return {ones: 0, zeroes: 0}}));
 
     const [_, gamma, epsilon] = charCountsByindex.reduce(([power, gamma, epsilon], next) => {
         const valueOfThisBit =  + Math.pow(2, power);
@@ -87,7 +87,7 @@ const part2 = (list, currentBit) => {
 }
 
 
-fetchDayCodes('2021', '3').then(codes => { 
+aoc.fetchDayCodes('2021', '3').then(codes => { 
     // console.log('all the codes', codes.map((c, i) => [c, i]));
     // return;
 
@@ -107,7 +107,7 @@ fetchDayCodes('2021', '3').then(codes => {
         return;
     }
 
-    Promise.all([fetchDayInput('2021', '3'), fetchDayAnswers('2021', '3')]).then(([input, answers]) => {
+    Promise.all([aoc.fetchDayInput('2021', '3'), aoc.fetchDayAnswers('2021', '3')]).then(([input, answers]) => {
         const list_of_ints = input.split("\n").filter(n => n != '');
         const answer2 = part1(list_of_ints);
         let answer2Right;

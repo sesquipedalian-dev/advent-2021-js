@@ -29,19 +29,25 @@ const authHeader = async () => {
 }
 
 
-export const fetchDayCodes = (year, day) => {
+const fetchDayCodes = (year, day) => {
     const url = `https://adventofcode.com/${year}/day/${day}`;
     return axiosInstance.get(url, null, {headers: authHeader()}).then(({data}) => [...data.matchAll(codeBlocksRegex).map(m => m[1])]);
 };
 
-export const fetchDayAnswers = (year, day) => { 
+const fetchDayAnswers = (year, day) => { 
     const url = `https://adventofcode.com/${year}/day/${day}`;
     return axiosInstance.get(url, null, {headers: authHeader()}).then(({data}) => [...data.matchAll(answersRegex).map(m => m[1])]);
 };
 
-export const fetchDayInput = (year, day) => { 
+const fetchDayInput = (year, day) => { 
     const url = `https://adventofcode.com/${year}/day/${day}/input`;
     return axiosInstance.get(url, null,  {headers: authHeader()}).then(({data}) => data)
+};
+
+export default {
+    fetchDayCodes, 
+    fetchDayAnswers, 
+    fetchDayInput
 };
 
 // // testing
