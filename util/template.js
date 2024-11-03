@@ -20,8 +20,8 @@ const part2 = () => {
 
 
 aoc.fetchDayCodes('{year}', '{day}').then(codes => { 
-    // console.log('all the codes', codes.map((c, i) => [c, i]));
-    // return;
+    console.log('all the codes', codes.map((c, i) => [c, i]));
+    return;
 
     const sample1 = codes[0].split("\\n").map(n => parseInt(n)).filter(n => n > 0);
     const p1Answer = codes[6];
