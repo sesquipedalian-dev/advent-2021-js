@@ -71,4 +71,4 @@ const makeYearDay = async (year, day) => {
     console.log(`wrote ${dirname}`);
 };
 
-makeYearDay('2021', '2');
+makeYearDay(process.argv[2], process.argv[3]);
