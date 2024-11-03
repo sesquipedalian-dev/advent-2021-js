@@ -16,8 +16,45 @@ const initArray = (size, cb) => {
     return [...Array(size)].map((_, i) => cb(i));
 }
 
+
+// given a string field of white-space separated characters / strings,
+// as a list of string lines
+// e.g. 
+//  1  2  3  4  5
+//  6  7  8  9 10
+// 11 12 13 14 15
+// 
+// some useful transformations of them
+
+// e.g.
+// 11  6  1
+// 12  7  2
+// 13  8  3
+// 14  9  4
+// 15 10  5
+//
+const rotateRight = (strings) => {
+    const rows = strings.length;
+    const columns = strings[0].split(/\s+/).filter(n => n != '').length;
+    const rotated = initArray(columns, () => initArray(rows, () => ''));
+    strings.forEach((s, row) => s.split(/\s+/).filter(n => n != '').forEach((c, col) => rotated[col][rows - row - 1] = c));
+    return rotated.map(r => r.join(' '))
+}
+
+// tests
+// const field = `
+//  1  2  3  4  5
+//  6  7  8  9 10
+// 11 12 13 14 15
+// `.split('\n').filter(n => n != '');
+
+// console.log('rotateRight 1', rotateRight(field));
+// console.log('rotateRight 2', rotateRight(rotateRight(field)));
+// console.log('rotateRight 3', rotateRight(rotateRight(rotateRight(field))));
+
 export default {
     stringListToFirstInt,
     stringToBinary,
     initArray,
+    rotateRight,
 };
