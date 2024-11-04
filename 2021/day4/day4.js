@@ -45,8 +45,47 @@ const part1 = ([foundNumbers, boardRows, boardColumns]) => {
     }, 0);
 }
 
-const part2 = () => {
-    return null;
+const part2 = ([foundNumbers, boardRows, boardColumns]) => {
+    // console.log('called with', foundNumbers);
+    // console.log('lakdsjlfkja', boardRows);
+    return foundNumbers.reduce(([sum, finishedBoards], found) => {
+        // console.log('iteration', found, sum, finishedBoards, JSON.stringify(boardColumns));
+        // if (sum > 0) { 
+        //     console.log('next loop 1');
+        //     return [sum, []]
+        // }
+        if (finishedBoards.reduce((soFar, n) => soFar && n, true)) { 
+            // console.log('finished');
+            return [sum, finishedBoards];
+        }
+
+        // console.log('iteration', JSON.stringify(boardRows[2])) ;;
+        var newScore = 0;
+        const newFinishedBoards = [...finishedBoards];
+        for(var b = 0; b < boardRows.length; b++) {
+            if (finishedBoards[b]) { 
+                // console.log('next loop 4');
+                continue;
+            }
+
+            const rowsScore = checkBoardRowsForNumber(boardRows[b], found)
+            if (rowsScore > 0) {
+                // console.log("did we finish a board?", rowsScore, b, finishedBoards.length, boardRows.length);
+                // console.log('next loop 2');
+                // OK, so this is not allowing columns on the other place to be marked
+                newScore = rowsScore * found;
+                newFinishedBoards[b] = true
+            }
+            const colsScore = checkBoardRowsForNumber(boardColumns[b], found)
+            if (colsScore > 0) {
+                // console.log('next loop 3');
+                newScore = colsScore * found;
+                newFinishedBoards[b] = true
+            }
+        }
+        // console.log('next loop 6', newFinishedBoards)
+        return [newScore, newFinishedBoards];
+    }, [0, [...Array(boardRows.length)]])[0];
 }
 
 const parse = (lines) => {
@@ -103,11 +142,12 @@ aoc.fetchDayCodes('2021', '4').then(codes => {
         return;
     }
 
-    // const part2Answer = part2(sample1);
-    // if (part2Answer != codes[26]) {
-    //     console.log('failed on part 2 test case', part2Answer, codes[26]);
-    //     return;
-    // }
+    const part2Answer = part2(parse(codes[0].split("\n")));
+    const p2Answer = parseInt(codes[23].split(/>|</)[2]);
+    if (part2Answer != p2Answer) {
+        console.log('failed on part 2 test case', part2Answer, p2Answer);
+        return;
+    }
 
     Promise.all([aoc.fetchDayInput('2021', '4'), aoc.fetchDayAnswers('2021', '4')]).then(([input, answers]) => {
         const parsed = parse(input.split("\n"));
@@ -118,12 +158,12 @@ aoc.fetchDayCodes('2021', '4').then(codes => {
         }
         console.log('part 1 answer', answer2, answer2Right);
 
-        // const answer3 = part2(list_of_ints);
-        // let answer3Right;
-        // if (answers.length > 1) { 
-        //     answer3Right = answers[1] == answer3.toString();
-        // }
-        // console.log('part 2 answer', answer3, answer3Right);
+        const answer3 = part2(parse(input.split("\n")));
+        let answer3Right;
+        if (answers.length > 1) { 
+            answer3Right = answers[1] == answer3.toString();
+        }
+        console.log('part 2 answer', answer3, answer3Right);
     });
 })
 
