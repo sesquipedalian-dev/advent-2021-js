@@ -31,12 +31,12 @@ const authHeader = async () => {
 
 const fetchDayCodes = (year, day) => {
     const url = `https://adventofcode.com/${year}/day/${day}`;
-    return axiosInstance.get(url, null, {headers: authHeader()}).then(({data}) => [...data.matchAll(codeBlocksRegex).map(m => m[1])]);
+    return axiosInstance.get(url, null, {headers: authHeader()}).then(({data}) => [...data.matchAll(codeBlocksRegex)].map(m => m[1]));
 };
 
 const fetchDayAnswers = (year, day) => { 
     const url = `https://adventofcode.com/${year}/day/${day}`;
-    return axiosInstance.get(url, null, {headers: authHeader()}).then(({data}) => [...data.matchAll(answersRegex).map(m => m[1])]);
+    return axiosInstance.get(url, null, {headers: authHeader()}).then(({data}) => [...data.matchAll(answersRegex)].map(m => m[1]));
 };
 
 const fetchDayInput = (year, day) => { 
