@@ -1,4 +1,5 @@
 import aoc from '../../util/aoc.js';
+import { stringListToFirstInt } from './utils.js';
 
 const part1 = (list_of_directions) => {
   const [finalX, finalY] = list_of_directions.reduce(([posX, posY], nextDirection) => {
