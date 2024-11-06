@@ -10,46 +10,17 @@ const part1 = (lineSegments, skipDiagonal = true) => {
                 return accum
             }
 
-            const generator = function*(start, end) {
-                for (let i = start; i <= end; i += 1){ 
-                    yield i
-                }
-            }
-
-            const repeater = function*(v) {
-                while(true) {
-                    yield v
-                }
-            }
-            
-            let xGenerator;
-            let yGenerator;
-            if (next.from.x < next.to.x) {
-                xGenerator = generator(next.from.x, next.to.x)
-            } else if (next.from.x > next.to.x) {
-                xGenerator = generator(next.to.x, next.from.x)
-            } else { 
-                xGenerator = repeater(next.from.x)
-            }
-           
-            // const xGenerator = generator()
-            if (next.from.y < next.to.y) { 
-                yGenerator = generator(next.from.y, next.to.y)
-            } else if (next.from.y > next.to.y) { 
-                yGenerator = generator(next.to.y, next.from.y)
-            } else { 
-                yGenerator = repeater(next.from.y)
-            }
-
             const newAccum = {...accum}
-            let curX = xGenerator.next();
-            let curY = yGenerator.next();
-            while(!(curX.done || curY.done)) {
-                console.log('tagging', next.from, next.to, curX.value, curY.value);
-                newAccum[[curX.value, curY.value]] = (newAccum[[curX.value, curY.value]] || 0) + 1 
-                curX = xGenerator.next();
-                curY = yGenerator.next();
+            let curPoint = {...next.from}
+            while(!(curPoint.x === next.to.x && curPoint.y === next.to.y)) {
+                // console.log('tagging', next.from, next.to, curPoint.x, curPoint.y);
+                newAccum[[curPoint.x, curPoint.y]] = (newAccum[[curPoint.x, curPoint.y]] || 0) + 1 
+                curPoint =  {
+                    x: curPoint.x + Math.sign(next.to.x - curPoint.x),
+                    y: curPoint.y + Math.sign(next.to.y - curPoint.y),
+                }
             }
+            newAccum[[curPoint.x, curPoint.y]] = (newAccum[[curPoint.x, curPoint.y]] || 0) + 1 
             return newAccum;
         },
         // map from [x,y] to count of seen 
@@ -59,7 +30,7 @@ const part1 = (lineSegments, skipDiagonal = true) => {
         if (count <= 1) { 
             return accum
         }
-        console.log('reducing', p, count)
+        // console.log('reducing', p, count)
         return accum + 1
     }, 0);
 }
@@ -107,12 +78,12 @@ aoc.fetchDayCodes('2021', '5').then(codes => {
         }
         console.log('part 1 answer', answer2, answer2Right);
 
-        // const answer3 = part2(list_of_ints);
-        // let answer3Right;
-        // if (answers.length > 1) { 
-        //     answer3Right = answers[1] == answer3.toString();
-        // }
-        // console.log('part 2 answer', answer3, answer3Right);
+        const answer3 = part2(list_of_ints);
+        let answer3Right;
+        if (answers.length > 1) { 
+            answer3Right = answers[1] == answer3.toString();
+        }
+        console.log('part 2 answer', answer3, answer3Right);
     });
 })
 
