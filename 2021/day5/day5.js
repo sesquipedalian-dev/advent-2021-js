@@ -11,15 +11,17 @@ const part1 = (lineSegments, skipDiagonal = true) => {
             }
 
             const generator = function*(start, end) {
-
+                for (let i = start; i <= end; i += 1){ 
+                    yield i
+                }
             }
+
             const repeater = function*(v) {
-
+                while(true) {
+                    yield v
+                }
             }
-            let dx = 0;
-            let dy = 0;
-            const xPoints = []
-            const yPoints = []
+            
             let xGenerator;
             let yGenerator;
             if (next.from.x < next.to.x) {
@@ -27,26 +29,26 @@ const part1 = (lineSegments, skipDiagonal = true) => {
             } else if (next.from.x > next.to.x) {
                 xGenerator = generator(next.to.x, next.from.x)
             } else { 
-                xGenerator = repeator(next.from.x)
+                xGenerator = repeater(next.from.x)
             }
            
             // const xGenerator = generator()
             if (next.from.y < next.to.y) { 
-                dy = 1
+                yGenerator = generator(next.from.y, next.to.y)
             } else if (next.from.y > next.to.y) { 
-                dy = -1
+                yGenerator = generator(next.to.y, next.from.y)
+            } else { 
+                yGenerator = repeater(next.from.y)
             }
 
             const newAccum = {...accum}
-            // console.log('iteration', next.from, next.to)
-            for (var cdx = 0; cdx <= Math.abs(next.to.x - next.from.x); cdx += 1) {
-                const x = next.from.x + (cdx * dx)
-                // console.log('tagging xs', x, next.from.x, next.to.x, Math.abs(next.to.x - next.from.x))
-                for (var cdy = 0; cdy <= Math.abs(next.to.y - next.from.y); cdy += 1) {
-                    const y = next.from.y + (cdy * dy)
-                    console.log("tagging point", next.from, next.to, x, y)
-                    newAccum[[x,y]] = (newAccum[[x,y]] || 0) + 1
-                }
+            let curX = xGenerator.next();
+            let curY = yGenerator.next();
+            while(!(curX.done || curY.done)) {
+                console.log('tagging', next.from, next.to, curX.value, curY.value);
+                newAccum[[curX.value, curY.value]] = (newAccum[[curX.value, curY.value]] || 0) + 1 
+                curX = xGenerator.next();
+                curY = yGenerator.next();
             }
             return newAccum;
         },
@@ -54,8 +56,11 @@ const part1 = (lineSegments, skipDiagonal = true) => {
         {}
     );
     return Object.entries(pointCounts).reduce((accum, [p, count]) => {
+        if (count <= 1) { 
+            return accum
+        }
         console.log('reducing', p, count)
-        return count > 1 ? accum + 1 : accum
+        return accum + 1
     }, 0);
 }
 
