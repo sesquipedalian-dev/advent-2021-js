@@ -55,10 +55,26 @@ const rotateRight = (strings) => {
 // `Answer` code blocks look like they're usually surrounded by <em> tags, e.g. <em>5</em> => 5
 const parseAnswerFromEms = (string) =>  parseInt(string.split(/>|</)[2]);
 
+// memoize (store map of inputs => outputs and refer to that map before calling f) a given function
+const memoize = (f) => {
+    const memo = {};
+    return (...args) => {
+        const memoKey = JSON.stringify(args);
+        if (memo[memoKey]) { 
+            return memo[memoKey]
+        }
+
+        const result = f.apply(this, args)
+        memo[memoKey] = result
+        return result
+    }
+}
+
 export default {
     stringListToFirstInt,
     stringToBinary,
     initArray,
     rotateRight,
     parseAnswerFromEms,
+    memoize,
 };

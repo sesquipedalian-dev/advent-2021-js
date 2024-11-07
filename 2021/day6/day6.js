@@ -33,8 +33,24 @@ const part1 = utils.memoize(function p1({state, days}) {
     return p1({state: newState, days: days - 1});
 });
 
-const part2 = () => {
-    return null;
+// so state = array, each index is the acount of fish with that timer remaining for a given day
+// e.g. [0, 1, 1, 2, 1, 0, 0, 0, 0]
+const part2 = ({state: initialState, days}) => {
+    let state = Array(9)
+    initialState.forEach(({current}) => state[current] = (state[current] || 0) + 1)
+    // console.log('part 2 starting with state', initialState, state, Number.MAX_SAFE_INTEGER);
+    for(var day = 0; day < days; day += 1) {
+        // console.log('part 2 iteration', day, state)
+        const newState = Array(9)
+        // fish at 0 reset to 6 and make a new fish
+        newState[6] = state[0]
+        newState[8] = state[0]
+        for (var i = 1; i <= 8; i += 1) {
+            newState[i - 1] = (newState[i - 1] || 0) + (state[i] || 0)
+        }
+        state = newState;
+    }
+    return state.reduce((sum, count) => sum + count, 0);
 }
 
 aoc.fetchDayCodes('2021', '6').then(codes => { 
@@ -58,12 +74,13 @@ aoc.fetchDayCodes('2021', '6').then(codes => {
         return;
     }
 
-    // const part2Answer = part2(sample1);
-    // const part2Correct = utils.parseAnswerFromEms(codes[codes.length - 1]);
-    // if (part2Answer != part2Correct) {
-    //     console.log('failed on part 2 test case', part2Answer, part2Correct);
-    //     return;
-    // }
+    sample1 = codes[12].split(",").map(n => parseInt(n)).filter(n => n > 0).map(n => ({current: n, max: 7}));
+    const part2Answer = part2({state: sample1, days: 256});
+    const part2Correct = utils.parseAnswerFromEms(codes[23]);
+    if (part2Answer != part2Correct) {
+        console.log('failed on part 2 test case', part2Answer, part2Correct);
+        return;
+    }
 
     Promise.all([aoc.fetchDayInput('2021', '6'), aoc.fetchDayAnswers('2021', '6')]).then(([input, answers]) => {
         let list_of_ints = input.split(',').map(n => parseInt(n)).filter(n => n > 0).map(n => ({current: n, max: 7}));
@@ -74,13 +91,13 @@ aoc.fetchDayCodes('2021', '6').then(codes => {
         }
         console.log('part 1 answer', answer2, answer2Right);
 
-        // let list_of_ints = input.split(',').map(n => parseInt(n)).filter(n => n > 0).map(n => ({current: n, max: 7}));
-        // const answer3 = part2({state: list_of_ints, days: 80});
-        // let answer3Right;
-        // if (answers.length > 1) { 
-        //     answer3Right = answers[1] == answer3.toString();
-        // }
-        // console.log('part 2 answer', answer3, answer3Right);
+        list_of_ints = input.split(',').map(n => parseInt(n)).filter(n => n > 0).map(n => ({current: n, max: 7}));
+        const answer3 = part2({state: list_of_ints, days: 256});
+        let answer3Right;
+        if (answers.length > 1) { 
+            answer3Right = answers[1] == answer3.toString();
+        }
+        console.log('part 2 answer', answer3, answer3Right);
     });
 })
 
