@@ -24,7 +24,7 @@ aoc.fetchDayCodes('{year}', '{day}').then(codes => {
     return;
 
     const sample1 = codes[0].split("\\n").map(n => parseInt(n)).filter(n => n > 0);
-    const p1Answer = codes[6];
+    const p1Answer = utils.parseAnswerFromEms(codes[codes.length - 1]);
     const samplePart1Answer = part1(sample1);
 
     if(samplePart1Answer != p1Answer) { 
@@ -33,8 +33,9 @@ aoc.fetchDayCodes('{year}', '{day}').then(codes => {
     }
 
     // const part2Answer = part2(sample1);
-    // if (part2Answer != codes[26]) {
-    //     console.log('failed on part 2 test case', part2Answer, codes[26]);
+    // const part2Correct = utils.parseAnswerFromEms(codes[codes.length - 1]);
+    // if (part2Answer != part2Correct) {
+    //     console.log('failed on part 2 test case', part2Answer, part2Correct);
     //     return;
     // }
 
