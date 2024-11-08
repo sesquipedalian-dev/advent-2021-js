@@ -70,6 +70,16 @@ const memoize = (f) => {
     }
 }
 
+// return new array of all values in all provided arrays
+// e.g. intersection([1,2,3,4,5], [2,3,4,5,6], [3,4,5,6,7]) === [3,4,5]
+const intersection = (...args) => {
+    const [head, ...rest] = [...args];
+    return rest.reduce((prev, next) => prev.filter(v => next.includes(v)), head)
+}
+
+// test
+// console.log('array intersection?', intersection([1,2,3,4,5], [2,3,4,5,6], [3,4,5,6,7]))
+
 export default {
     stringListToFirstInt,
     stringToBinary,
@@ -77,4 +87,5 @@ export default {
     rotateRight,
     parseAnswerFromEms,
     memoize,
+    intersection,
 };
