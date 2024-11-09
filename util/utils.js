@@ -90,8 +90,17 @@ class Grid {
     // lines - the string
     // separator - separator between entries within a row (e.g. '' to split on every char)
     // parse - parse individual entries, e.g. parseInt
-    constructor(lines, separator=/\s+/, parse=(e) => e) {
+    constructor(lines, separator=/\s+/, parse=(e) => e, diagonalNeighbors=false) {
         this.items = lines.split('\n').filter(n => n != '').map(l => stripEms(l).split(separator).filter(n => n != '').map(s => parse(s)))
+        this.internalDiagonalNeighbors = diagonalNeighbors
+    }
+
+    get diagonalNeighbors() { 
+        return this.internalDiagonalNeighbors
+    }
+
+    set diagonalNeighbors(trueOrFalse) {
+        this.internalDiagonalNeighbors = !!trueOrFalse
     }
 
     // item at row, column 
@@ -104,19 +113,36 @@ class Grid {
         this.items[row][column] = item
     }
 
+    size() { 
+        return this.rows * this.columns
+    }
+
     // get all adjacent indices to the given index, 
     // excluding things that are out of bounds
-    // in N E S W order
+    // in N (NE) E (SE) S (SW) W (NW) order
+    // neighbors in () only count when this.diagonalNeighbors is true
     neighboringIndexes(row, column) {
         const neighbors = []
         if (row > 0) { 
             neighbors.push([row - 1, column])
+            if(this.diagonalNeighbors && column > 0) {
+                neighbors.push([row - 1, column -1 ])
+            }
+            if(this.diagonalNeighbors && column < this.columns - 1) {
+                neighbors.push([row - 1, column + 1])
+            }
         }
         if (column < this.columns - 1) {
             neighbors.push([row, column + 1])
         }
         if (row < this.rows - 1) {
             neighbors.push([row + 1, column])
+            if(this.diagonalNeighbors && column > 0) {
+                neighbors.push([row + 1, column - 1])
+            }
+            if(this.diagonalNeighbors && column < this.columns - 1) {
+                neighbors.push([row + 1, column + 1])
+            }
         }
         if (column > 0) {
             neighbors.push([row, column - 1])
@@ -160,6 +186,12 @@ class Grid {
 //     6   7  8  9 10
 //     11 12 13 14 15
 // `)
+// console.log('neighbors', testGrid.neighboringIndexes(0, 0))
+// console.log('neighbors', testGrid.neighboringIndexes(2, 5))
+// console.log('neighbors', testGrid.neighboringIndexes(2, 0))
+// console.log('neighbors', testGrid.neighboringIndexes(0, 5))
+
+// testGrid.diagonalNeighbors = true
 // console.log('neighbors', testGrid.neighboringIndexes(0, 0))
 // console.log('neighbors', testGrid.neighboringIndexes(2, 5))
 // console.log('neighbors', testGrid.neighboringIndexes(2, 0))

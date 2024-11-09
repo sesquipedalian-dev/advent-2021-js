@@ -113,6 +113,10 @@ class Grid {
         this.items[row][column] = item
     }
 
+    size() { 
+        return this.rows * this.columns
+    }
+
     // get all adjacent indices to the given index, 
     // excluding things that are out of bounds
     // in N (NE) E (SE) S (SW) W (NW) order
