@@ -29,8 +29,50 @@ const part1 = ([adjacency, isBig]) => {
     return count;
 }
 
-const part2 = () => {
-    return null;
+const part2 = ([adjacency, isBig]) => {
+    // console.log('isBig', isBig)
+    // console.log('*******************************')
+    let count = 0
+    const toVisit = [{nextVisit: 'start', visited: [], hasVisitedTwice: false}]
+    // const visited = new Set()
+    while(toVisit.length > 0) { 
+        const {nextVisit, visited, hasVisitedTwice} = toVisit.pop()
+        // console.log('visiting?', nextVisit, visited, hasVisitedTwice)
+        if(nextVisit === 'end') { 
+            // console.log('found end', visited, nextVisit)
+            count += 1
+            // if(count >= 40) {
+            //     break;
+            // }
+            continue;
+        }
+
+        // so 
+        // - there aren't 2 copies of nextVisit in the visited array
+        // - there are no OTHER small letters in the array that have 2 copies
+        const hasAlreadyVisitedThis = visited.indexOf(nextVisit) >= 0
+        if(!isBig.has(nextVisit) && hasVisitedTwice && hasAlreadyVisitedThis) {
+            // console.log('visited twice already')
+            continue;
+        }
+ 
+        // console.log('visiting and looking up neighbors', nextVisit, visited)
+        const neighbors = adjacency[nextVisit]
+        if (neighbors) { 
+            neighbors.forEach(neighbor => {
+                if (neighbor === 'start') {
+                    return
+                }
+                toVisit.push({
+                    nextVisit: neighbor, 
+                    visited: [...visited, nextVisit],
+                    hasVisitedTwice: isBig.has(nextVisit) ? hasVisitedTwice : (hasAlreadyVisitedThis || hasVisitedTwice)
+                })
+            })
+        }
+    }
+    // console.log('*****************************')
+    return count;
 }
 
 const parse = (lines) => { 
@@ -40,6 +82,7 @@ const parse = (lines) => {
         if (l === '') { 
             return
         }
+        // console.log('parsing l', l)
         const [from, to] = l.split(/\W/)
         // console.log('parsing l', l, from, to)
         if('A' <= from[0] && from[0] <= 'Z') { 
@@ -75,21 +118,34 @@ aoc.fetchDayCodes('2021', '12').then(codes => {
         return
     }
 
-    const sample1 = parse(codes[22].split("\n").filter(n => n != ""))
+    const sample1 = codes[22].split("\n").filter(n => n != "")
     const p1Answer = parseInt(codes[21]);
-    const samplePart1Answer = part1(sample1);
+    const samplePart1Answer = part1(parse(sample1));
 
     if(samplePart1Answer != p1Answer) { 
         console.log('failed on part 1 test case', samplePart1Answer, p1Answer);
         return;
     }
 
-    // const part2Answer = part2(sample1);
-    // const part2Correct = utils.parseAnswerFromEms(codes[codes.length - 1]);
-    // if (part2Answer != part2Correct) {
-    //     console.log('failed on part 2 test case', part2Answer, part2Correct);
-    //     return;
-    // }
+    const p2Answer3 = parseInt(codes[28])
+    const p2Answ3 = part2(parse(sample3))
+    if (p2Answer3 != p2Answ3) { 
+        console.log('failed on part 2 test case 3', p2Answ3, p2Answer3)
+        return
+    }
+
+    const p2Answer2 = parseInt(codes[30])
+    const p2Answ2 = part2(parse(sample2))
+    if (p2Answer2 != p2Answ2) { 
+        console.log('failed on part 2 test case 2', p2Answ2, p2Answer2)
+    }
+
+    const part2Answer = part2(parse(sample1));
+    const part2Correct = parseInt(codes[31]);
+    if (part2Answer != part2Correct) {
+        console.log('failed on part 2 test case', part2Answer, part2Correct);
+        return;
+    }
 
     Promise.all([aoc.fetchDayInput('2021', '12'), aoc.fetchDayAnswers('2021', '12')]).then(([input, answers]) => {
 
@@ -101,12 +157,12 @@ aoc.fetchDayCodes('2021', '12').then(codes => {
         }
         console.log('part 1 answer', answer2, answer2Right);
 
-        // const answer3 = part2(list_of_ints);
-        // let answer3Right;
-        // if (answers.length > 1) { 
-        //     answer3Right = answers[1] == answer3.toString();
-        // }
-        // console.log('part 2 answer', answer3, answer3Right);
+        const answer3 = part2(list_of_ints);
+        let answer3Right;
+        if (answers.length > 1) { 
+            answer3Right = answers[1] == answer3.toString();
+        }
+        console.log('part 2 answer', answer3, answer3Right);
     });
 })
 
