@@ -269,7 +269,6 @@ class SparseGrid extends Grid {
 // console.log('test grid rows', testGrid.rows)
 // console.log('test grid cols', testGrid.columns)
 
-
 // parse an input, changing state of parsing at each blank line
 // for example
 // NNCB

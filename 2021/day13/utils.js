@@ -269,6 +269,32 @@ class SparseGrid extends Grid {
 // console.log('test grid rows', testGrid.rows)
 // console.log('test grid cols', testGrid.columns)
 
+// parse an input, changing state of parsing at each blank line
+// for example
+// NNCB
+// 
+// CH -> B
+// parseSeparatedSections({
+//    parsers: [(l) => /* do something with NNCB */, (l) => /* do something with each line CH -> B etc */]
+// })
+// 
+const parseSeparatedSections = ({
+    input, 
+    parsers, 
+    sectionSeparator = (l) => l === "",
+    lineSeparator = "\n",
+}) => {
+    let currentParser = 0
+    const lines = input.split(lineSeparator)
+    while (lines.length > 0) { 
+        const line = lines.shift()
+        if ( sectionSeparator(line)) { 
+            currentParser += 1
+        } else {
+            parsers[currentParser](line)    
+        }
+    }
+}
 
 export default {
     stringListToFirstInt,
@@ -281,4 +307,5 @@ export default {
     stripEms,
     Grid,
     SparseGrid,
+    parseSeparatedSections
 };

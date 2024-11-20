@@ -53,22 +53,35 @@ const part2 = ({grid, folds}) => {
 const parse = (lines) => { 
     const grid = new utils.SparseGrid();
     const folds = []
-    let readyForFolds = false
-    while(lines.length > 0) { 
-        const nextLine = lines.shift()
-        if (readyForFolds) { 
-            if (nextLine === "") { 
-                continue
+    utils.parseSeparatedSections({
+        input: lines,
+        parsers: [
+            (nextLine) => {
+                const [column, row] = nextLine.split(',').map(s => parseInt(s))
+                grid.set(row, column, true)
+            },
+            (nextLine) => { 
+                const [_1, _2, direction, magnitude] = nextLine.split(/\s+|=/)
+                folds.push({direction, magnitude})
             }
-            const [_1, _2, direction, magnitude] = nextLine.split(/\s+|=/)
-            folds.push({direction, magnitude})
-        } else if (nextLine === "") {
-            readyForFolds = true
-        } else { 
-            const [column, row] = nextLine.split(',').map(s => parseInt(s))
-            grid.set(row, column, true)
-        }
-    }
+        ]
+    })
+    // let readyForFolds = false
+    // while(lines.length > 0) { 
+    //     const nextLine = lines.shift()
+    //     if (readyForFolds) { 
+    //         if (nextLine === "") { 
+    //             continue
+    //         }
+    //         const [_1, _2, direction, magnitude] = nextLine.split(/\s+|=/)
+    //         folds.push({direction, magnitude})
+    //     } else if (nextLine === "") {
+    //         readyForFolds = true
+    //     } else { 
+    //         const [column, row] = nextLine.split(',').map(s => parseInt(s))
+    //         grid.set(row, column, true)
+    //     }
+    // }
     // console.log('made stuff', folds)
     // grid.print()
     return {grid, folds}
@@ -78,7 +91,7 @@ aoc.fetchDayCodes('2021', '13').then(codes => {
     // console.log('all the codes', codes.map((c, i) => [c, i]));
     // return;
 
-    const sample1 = parse(codes[1].split("\n"))
+    const sample1 = parse(codes[1])
     const p1Answer = utils.parseAnswerFromEms(codes[27]);
     const samplePart1Answer = part1(sample1);
 
@@ -89,7 +102,7 @@ aoc.fetchDayCodes('2021', '13').then(codes => {
 
     Promise.all([aoc.fetchDayInput('2021', '13'), aoc.fetchDayAnswers('2021', '13')]).then(([input, answers]) => {
 
-        const list_of_ints = parse(input.split("\n"));
+        const list_of_ints = parse(input);
         const answer2 = part1(list_of_ints);
         let answer2Right;
         if (answers.length > 0) { 
