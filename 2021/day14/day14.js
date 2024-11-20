@@ -59,8 +59,55 @@ const part1 = ({start, rules}) => {
     return max - min
 }
 
-const part2 = () => {
-    return null;
+const part2 = ({start, rules}) => {
+    // console.log('starting p2', start, rules)
+    // return
+    let state = new Map() // map pair to count
+    for (var i = 0; i < start.length - 1; i += 1) { 
+        state.set(start.slice(i, i+ 2), (state.get(start.slice(i, i+ 2)) || 0) + 1)
+    }
+
+    for (var step = 0; step < 40; step += 1) {
+        // console.log('getting stuck in here somehow', state)
+        let bState = new Map()
+        
+        // NNCB NCNBCHB
+        // NN -> C
+        // NC, CN
+        // NC -> B
+        // NB, BC
+        // CB -> H
+        // CH, HB
+        rules.forEach((to, from) => {
+            // console.log('checking rules', from, to, state.get(from))
+            bState.set(from[0] + to, (bState.get(from[0] + to) || 0) + (state.get(from) || 0))
+            bState.set(to + from[1], (bState.get(to + from[1]) || 0) + (state.get(from) || 0))
+        })
+
+        state = bState
+    }
+
+    // console.log('ok lets check counts', state, state.entries())
+    let [min, max] = Object.entries(state.entries().reduce((counts, [pair, c]) => {
+        // console.log('part 1', counts, pair, c)
+        return {
+            ...counts,
+            [pair[0]]: (counts[pair[0]] || 0) + c,
+            [pair[1]]: (counts[pair[1]] || 0) + c,
+        }
+    }, {})).reduce(([min, max], [_l, count]) => { 
+        // console.log('reducing map 2', min, max, _l, count)
+        if (count < min) { 
+            return [count, max]
+        } else if (count > max) { 
+            return [min, count]
+        } else { 
+            return [min, max]
+        }
+    }, [Number.MAX_SAFE_INTEGER, 0])
+
+    console.log('max min calculated', min, max)
+    return max - min
 }
 
 const parse = (input, realInput=false) => { 
@@ -92,12 +139,12 @@ aoc.fetchDayCodes('2021', '14').then(codes => {
         return;
     }
 
-    // const part2Answer = part2(sample1);
-    // const part2Correct = utils.parseAnswerFromEms(codes[codes.length - 1]);
-    // if (part2Answer != part2Correct) {
-    //     console.log('failed on part 2 test case', part2Answer, part2Correct);
-    //     return;
-    // }
+    const part2Answer = part2(sample1);
+    const part2Correct = utils.parseAnswerFromEms(codes[35]);
+    if (part2Answer != part2Correct) {
+        console.log('failed on part 2 test case', part2Answer, part2Correct);
+        return;
+    }
 
     Promise.all([aoc.fetchDayInput('2021', '14'), aoc.fetchDayAnswers('2021', '14')]).then(([input, answers]) => {
 

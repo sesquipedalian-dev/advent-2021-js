@@ -4,12 +4,13 @@
   "description": "'advent'",
   "main": "index.js",
   "scripts": {
-    "2021day1" : "node 2021/day1/day1.js"
+    "2021day1": "node 2021/day1/day1.js"
   },
   "author": "Scott Agnew",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.7"
+    "axios": "^1.7.7",
+    "core-js": "^3.39.0"
   },
   "type": "module"
 }

@@ -1,3 +1,4 @@
+import 'core-js/actual/iterator/index.js';
 
 const numRegex = /\d+(\.\d+)?/;
 const stringListToFirstInt = (strings) => { 
