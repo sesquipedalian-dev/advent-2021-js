@@ -4,50 +4,43 @@ import utils from './utils.js';
 
 const part1 = (grid) => {
     // Djkstra's ? 
-    let unvisited = {[JSON.stringify([0,0])]: true}
-    const best = {} 
-    grid.iterate((row, column) => {
-        if(row == 0 && column == 0) { 
-            return 
-        }
-        best[JSON.stringify([row, column])] = Number.MAX_SAFE_INTEGER
-        unvisited[JSON.stringify([row, column])] = true
-    })
-    best[JSON.stringify([0,0])] = 0 // map from row, column coord to min risk to get there
- 
     const target = [grid.rows - 1, grid.columns - 1]
-    while(Object.entries(unvisited).length > 0) {
-        let current = Object.entries(unvisited).reduce(([i, min], [coord]) => {
-            // console.log('what is happening', i, min, coord)
-            if (!i) {
-                return [coord, best[coord]]
+    let steps = 0
+    while(steps < 10_000 && !grid.at(target[0], target[1]).visited) {
+        steps += 1
+        let current = {
+            best: Number.MAX_SAFE_INTEGER
+        }
+        grid.iterate((row, column, {best, visited}) => {
+            // console.log('iteration', row, column, best)
+            if (!visited && best < current.best) { 
+                current.best = best
+                current.row = row
+                current.column = column
             }
-            return best[coord] < min ? [coord, best[coord]] : [i, min]
-        }, [null, Number.MAX_SAFE_INTEGER])[0]
-        delete unvisited[current]
-        // console.log('iteration', current, best[current])
-        const [currentRow, currentColumn] = JSON.parse(current)
-        // console.log('iteration', current, best[current])
-        if (currentRow == target[0] && currentColumn == target[1]){
+        })
+        // console.log('iteration', current)
+        if (current.row == target[0] && current.column == target[1]){
+            // reached end
             break
         }
+        grid.at(current.row, current.column).visited = true
 
-        grid.neighboringIndexes(currentRow, currentColumn).forEach(([row, column]) => {
-            const key = JSON.stringify([row, column])
-            if (!unvisited[key]) {
+        grid.neighboringIndexes(current.row, current.column).forEach(([row, column]) => {
+            if (grid.at(row, column).visited) {
                 // console.log('already visited?', row, '***', column)
                 return
             }
             
-            const cost = best[current] + grid.at(row, column)
+            const cost = current.best + grid.at(row, column).risk
             // console.log('feeling neighborly', row, column, cost)
-            if (!best[key] || cost < best[key]) {
-                best[key] = cost
+            if (cost < grid.at(row, column).best) {
+                grid.at(row, column).best = cost
             }
         })
     }
 
-    return best[JSON.stringify(target)]
+    return grid.at(grid.rows - 1, grid.columns - 1).best
 }
 
 const part2 = () => {
@@ -64,7 +57,7 @@ aoc.fetchDayCodes('2021', '15').then(codes => {
         '',
         (s, row, column) => ({
             visited: false,
-            value: parseInt(s, 10),
+            risk: parseInt(s, 10),
             best: (row == 0 && column == 0) ? 0 : Number.MAX_SAFE_INTEGER
         })
     )
@@ -87,7 +80,11 @@ aoc.fetchDayCodes('2021', '15').then(codes => {
         const list_of_ints = new utils.Grid(
             input,
             '', 
-            (s) => parseInt(s, 10)
+            (s, row, column) => ({
+                visited: false,
+                risk: parseInt(s, 10),
+                best: (row == 0 && column == 0) ? 0 : Number.MAX_SAFE_INTEGER
+            })
         )
         const answer2 = part1(list_of_ints);
         let answer2Right;
