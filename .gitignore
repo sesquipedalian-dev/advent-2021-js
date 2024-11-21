@@ -131,3 +131,5 @@ dist
 
 # store your aoc session cookie locally
 token.txt
+*.log
+*.txt
