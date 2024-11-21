@@ -1,24 +1,32 @@
 
 import aoc from '../../util/aoc.js';
 import utils from './utils.js';
-import { MinPriorityQueue } from '@datastructures-js/priority-queue';
 
+// TODO this whole business with iterating through the grid for the next best spot to
+//  visit seems to be very slow.  Completing the part 2 took like 10 min + 
+// I tried out a priority queue data structure, but then iterating through the 
+// the queue to find the entries to update does'nt work great. 
+// I reckon we would need to implement the queue ourselves, or structure the code differently
+// https://github.com/datastructures-js/priority-queue
 const part1 = (grid) => {
     // Djkstra's ? 
     const target = [grid.rows - 1, grid.columns - 1]
     let steps = 0
-    // interface IGridEntry {
-    //     row: Number,
-    //     column: Number,
-    //     best: Number
-    // }
-    let unvisited = new MinPriorityQueue(({row, column}) => grid.at(row, column).best)
-    grid.iterate((row, column) => unvisited.enqueue({row, column}))
-
-    while(steps < 1_000_000 && !grid.at(target[0], target[1]).visited) {
+    while(steps < 10_000_000 && !grid.at(target[0], target[1]).visited) {
         steps += 1
      
-        const current = unvisited.dequeue()
+        let current = {
+            best: Number.MAX_SAFE_INTEGER
+        }
+    
+        grid.iterate((row, column, {best, visited}) => {
+            // console.log('iteration', row, column, best)
+            if (!visited && best < current.best) { 
+                current.best = best
+                current.row = row
+                current.column = column
+            }
+        })
         // console.log('iteration', current)
         if (current.row == target[0] && current.column == target[1]){
             // reached end
@@ -35,12 +43,10 @@ const part1 = (grid) => {
                 return
             }
             
-            const cost = grid.at(current.row, current.column).best + grid.at(row, column).risk
-            // console.log('feeling neighborly', row, column, cost, grid.at(row, column).best)
+            const cost = current.best + grid.at(row, column).risk
+            // console.log('feeling neighborly', row, column, cost)
             if (cost < grid.at(row, column).best) {
                 grid.at(row, column).best = cost
-                unvisited.remove(({r2, c2}) => r2 == row && c2 == column)
-                unvisited.enqueue({row, column, cost})
             }
         })
     }
