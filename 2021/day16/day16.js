@@ -3,11 +3,9 @@ import aoc from '../../util/aoc.js';
 import utils from './utils.js';
 
 const part1 = (packets) => {
-    return packets.map(l => factory(parse(l))[0])
-        .reduce((s, p) => {
-            // console.log('iteration', typeof p, p, s, p.versionSum, p.toString())
-            return s + p.versionSum
-        }, 0)
+    // oh btw there really is only one outermost packet
+    const packet = factory(parse(packets[0]))[0]
+    return packet.versionSum
 }
 
 const part2 = () => {
