@@ -8,8 +8,10 @@ const part1 = (packets) => {
     return packet.versionSum
 }
 
-const part2 = () => {
-    return null;
+const part2 = (packetLines) => {
+    const packet = factory(parse(packetLines[0]))[0]
+    // console.log(packet.toString())
+    return packet.value()
 }
 
 const parse = (hexString) => [...hexString].map(l => parseInt(l, 16).toString(2).padStart(4, '0')).reduce((s, n) => s + n, '')
@@ -90,7 +92,10 @@ const factory = (binaryString, packetLimit=Number.MAX_SAFE_INTEGER) => {
             length += rest.length
             return [new OperatorPacket({version, idType, subPackets, length})]
         }
-        return [new OperatorPacket({version, idType, subPackets, length}), ...factory(rest)]
+
+        // return 
+        // throw new Error(`should not have top level packet conusming rest???? ${binaryString} ${version} ${idType} ${subPackets} ${length} ${rest}`)
+        return [new OperatorPacket({version, idType, subPackets, length}), ...factory(rest, packetLimit - 1)]
     }
 
     return [new OperatorPacket({version, idType, subPackets, length})]
@@ -104,7 +109,7 @@ class Packet {
     }
 
     toString() {
-        return `version=${this.version};versionSum=${this.versionSum};length=${this.length}`
+        return `idType=${this.idType};version=${this.version};versionSum=${this.versionSum};length=${this.length}`
     }
 
     get versionSum() { 
@@ -121,6 +126,10 @@ class LiteralPacket extends Packet {
     toString() {
         return `${super.toString()};literalValue=${this.literalValue}`
     }
+
+    value() { 
+        return this.literalValue
+    }
 }
 
 class OperatorPacket extends Packet { 
@@ -132,16 +141,62 @@ class OperatorPacket extends Packet {
     toString() {
         // return ''
         // console.log('my subpackets? ', this, this.subPackets)
-        return `${super.toString()};subPackets=[${this.subPackets.map(p => p.toString())}]`
+        return `${super.toString()};subPackets=[${this.subPackets.map(p => p.toString()).join(',')}]`
     }
 
     get versionSum() { 
         return super.versionSum + this.subPackets.reduce((s, p) => s + p.versionSum, 0)
     }
+
+    value() { 
+        if(this.cached) { 
+            return this.cached
+        }
+
+        let v
+        switch(this.idType) { 
+            case 0:
+                v = this.subPackets.reduce((accum, n) => accum + n.value(), 0)
+                break;
+            case 1: 
+                v = this.subPackets.reduce((accum, n) => accum * n.value(), 1)
+                break
+            case 2:
+                v = this.subPackets.reduce((accum, n) => n.value() < accum ? n.value() : accum, Number.MAX_SAFE_INTEGER)
+                break;
+            case 3:
+                v = this.subPackets.reduce((accum, n) => n.value() > accum ? n.value() : accum, Number.MIN_SAFE_INTEGER)
+                break;
+            case 5:
+            case 6:
+            case 7:
+                if (this.subPackets.length != 2) { 
+                    throw new Error('invalid sub packet length!')
+                }
+                switch(this.idType) { 
+                    case 5: 
+                        v = this.subPackets[0].value() > this.subPackets[1].value() ? 1 : 0
+                        break;
+                    case 6: 
+                        v = this.subPackets[0].value() < this.subPackets[1].value() ? 1 : 0
+                        break;
+                    case 7:
+                        v = this.subPackets[0].value() == this.subPackets[1].value() ? 1 : 0
+                        break;
+                }
+                break;
+            default:
+                console.log('unknown id type!?', this.idType)
+                return 0
+        }
+        this.cached = v
+        // console.log('visiting value of node', this.idType, v, this.subPackets.map(p => p.value()))
+        return v
+    }
 }
 
 aoc.fetchDayCodes('2021', '16').then(codes => { 
-    // console.log('all the codes', codes.map((c, i) => [c, i]));
+    // console.log('all the codes', codes.slice(80).map((c, i) => [c, i]));
     // return;
 
     const sample1 = factory(parse(codes[7]))[0]
@@ -176,18 +231,25 @@ aoc.fetchDayCodes('2021', '16').then(codes => {
         return
     }
 
-    // const sample4 = factory(parse('8A004A801A8002F478'))[0]
-    // console.log('sample 4 1', sample4.toString())
-
-    // const sample5 = factory(parse('A0016C880162017C3686B18A3D4780'))[0]
-    // console.log(`sample 4 2: ${sample5.toString()}`)
-
-    // const part2Answer = part2(sample1);
-    // const part2Correct = utils.parseAnswerFromEms(codes[codes.length - 1]);
-    // if (part2Answer != part2Correct) {
-    //     console.log('failed on part 2 test case', part2Answer, part2Correct);
-    //     return;
-    // }
+    [
+        [90, 93],
+        [94, 97],
+        [98, 102],
+        [103, 107],
+        [108, 109],
+        [112, 113],
+        [116, 117],
+        [120, 121]
+    ].forEach(([sample, answer], i) => { 
+        // console.log('############### bin String #################')
+        // console.log(parse(codes[sample]))
+        // console.log('#####################')
+        const v = part2([codes[sample]])
+        const a = utils.parseAnswerFromEms(codes[answer]) || parseInt(codes[answer])
+        if (v != a) { 
+            console.log('error on part 2 test case ', i, sample, answer, v, a)
+        }
+    })
 
     Promise.all([aoc.fetchDayInput('2021', '16'), aoc.fetchDayAnswers('2021', '16')]).then(([input, answers]) => {
         // console.log('******************* starting main **********************')
@@ -202,12 +264,13 @@ aoc.fetchDayCodes('2021', '16').then(codes => {
         // 805 is too low
         console.log('part 1 answer', answer2, answer2Right);
 
-        // const answer3 = part2(list_of_ints);
-        // let answer3Right;
-        // if (answers.length > 1) { 
-        //     answer3Right = answers[1] == answer3.toString();
-        // }
-        // console.log('part 2 answer', answer3, answer3Right);
+        const answer3 = part2(list_of_ints);
+        let answer3Right;
+        if (answers.length > 1) { 
+            answer3Right = answers[1] == answer3.toString();
+        }
+        // 122659186 is too low
+        console.log('part 2 answer', answer3, answer3Right);
     });
 })
 
