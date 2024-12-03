@@ -157,8 +157,12 @@ class Grid {
     }
 
     // number of columns
-    get columns() { 
-        return this.items[0].length
+    get columns() {
+        if(!this.cachedColumns) {
+            this.cachedColumns = this.items.reduce((accum, row) => row.length > accum ? row.length : accum, 0)
+        }
+        
+        return this.cachedColumns
     }
 
     // iterate through all entries in the grid.  callbacks for
