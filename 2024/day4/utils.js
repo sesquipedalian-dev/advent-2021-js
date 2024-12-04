@@ -74,7 +74,7 @@ const rotateRight = (strings, separator=/\s+/, joiner=' ') => {' '
 // TODO TODO *** I think this is being too short in some cases 
 const rotateRight45 = (strings, separator=/\s+/, joiner=' ') => {
     const columns = strings[0].split(separator).filter(n => n != '').length;
-    const rows = columns + 2;
+    const rows = columns + strings.length;
     const rotated = initArray(rows, () => []);
     const orig = strings.map((s) => s.split(separator).filter(n => n != ''))
     for (var row = 0; row < rows; row += 1) {
@@ -107,6 +107,20 @@ const rotateRight45 = (strings, separator=/\s+/, joiner=' ') => {
 // 5 6
 // 7 8`.split('\n').filter(n => n != '')
 // console.log('rotateRight45 3', rotateRight45(field4));
+
+// const field5 =`
+// M M M S X X M A S M
+// M S A M X M S M S A
+// A M X S X M A A M M
+// M S A M A S M S M X
+// X M A S A M X A M M
+// X X A M M X X A M A 
+// S M S M S A S X S S
+// S A X A M A S A A A
+// M A M M M X M M M M
+// M X M X A X M A S X
+// `.split('\n').filter(n => n!= '')
+// console.log('rotateRight45 4', rotateRight45(field5))
 
 
 // `Answer` code blocks look like they're usually surrounded by <em> tags, e.g. <em>5</em> => 5
