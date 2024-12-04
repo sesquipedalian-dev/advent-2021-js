@@ -34,12 +34,12 @@ const initArray = (size, cb) => {
 // 14  9  4
 // 15 10  5
 //
-const rotateRight = (strings) => {
+const rotateRight = (strings, separator=/\s+/, joiner=' ') => {' '
     const rows = strings.length;
-    const columns = strings[0].split(/\s+/).filter(n => n != '').length;
+    const columns = strings[0].split(separator).filter(n => n != '').length;
     const rotated = initArray(columns, () => initArray(rows, () => ''));
-    strings.forEach((s, row) => s.split(/\s+/).filter(n => n != '').forEach((c, col) => rotated[col][rows - row - 1] = c));
-    return rotated.map(r => r.join(' '))
+    strings.forEach((s, row) => s.split(separator).filter(n => n != '').forEach((c, col) => rotated[col][rows - row - 1] = c));
+    return rotated.map(r => r.join(joiner))
 }
 
 // tests
@@ -52,6 +52,76 @@ const rotateRight = (strings) => {
 // console.log('rotateRight 1', rotateRight(field));
 // console.log('rotateRight 2', rotateRight(rotateRight(field)));
 // console.log('rotateRight 3', rotateRight(rotateRight(rotateRight(field))));
+
+// given a string field of white-space separated characters / strings,
+// as a list of string lines
+// e.g. 
+//  1  2  3  4  5
+//  6  7  8  9 10
+// 11 12 13 14 15
+// 
+// some useful transformations of them
+
+// e.g.
+// 1
+// 6 2
+// 11 7 3
+// 12 8 4
+// 13 9 5
+// 14 10
+// 5
+//
+// TODO TODO *** I think this is being too short in some cases 
+const rotateRight45 = (strings, separator=/\s+/, joiner=' ') => {
+    const columns = strings[0].split(separator).filter(n => n != '').length;
+    const rows = columns + strings.length;
+    const rotated = initArray(rows, () => []);
+    const orig = strings.map((s) => s.split(separator).filter(n => n != ''))
+    for (var row = 0; row < rows; row += 1) {
+        for (var col = 0; col < columns; col += 1) {
+            if(0 <= (row - col) && (row - col) < strings.length) {
+                rotated[row].push(orig[row - col][col])
+            }
+        }
+    }
+    return rotated.map(r => r.join(joiner)).map(s => s.trim()).filter(s => s != '')
+}
+// tests
+// const field2 = `
+//  1  2  3  4  5
+//  6  7  8  9 10
+// 11 12 13 14 15
+// `.split('\n').filter(n => n != '');
+
+// console.log('rotateRight45 1', rotateRight45(field2));
+
+// const field3 = `
+// 1 2 3
+// 4 5 6
+// 7 8 9`.split('\n').filter(n => n != '');
+// console.log('rotateRight45 2', rotateRight45(field3));
+
+// const field4 = `
+// 1 2
+// 3 4
+// 5 6
+// 7 8`.split('\n').filter(n => n != '')
+// console.log('rotateRight45 3', rotateRight45(field4));
+
+// const field5 =`
+// M M M S X X M A S M
+// M S A M X M S M S A
+// A M X S X M A A M M
+// M S A M A S M S M X
+// X M A S A M X A M M
+// X X A M M X X A M A 
+// S M S M S A S X S S
+// S A X A M A S A A A
+// M A M M M X M M M M
+// M X M X A X M A S X
+// `.split('\n').filter(n => n!= '')
+// console.log('rotateRight45 4', rotateRight45(field5))
+
 
 // `Answer` code blocks look like they're usually surrounded by <em> tags, e.g. <em>5</em> => 5
 const parseAnswerFromEms = (string) =>  parseInt(string.split(/>|</)[2]);
@@ -307,6 +377,7 @@ export default {
     stringToBinary,
     initArray,
     rotateRight,
+    rotateRight45,
     parseAnswerFromEms,
     memoize,
     intersection,
