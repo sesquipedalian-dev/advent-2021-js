@@ -153,42 +153,6 @@ const intersection = (...args) => {
 // strip any <em></em> tags from the string
 const stripEms = (string) => string.replaceAll('<em>', '').replaceAll('</em>', '')
 
-const DIRECTIONS = {
-    N: {dRow: -1, dColumn: 0, name: 'N'},
-    NE: {dRow: -1, dColumn: 1, name: 'NE'},
-    E: {dRow: 0, dColumn: 1, name: 'E'},
-    SE: {dRow: 1, dColumn: 1, name: 'SE'},
-    S: {dRow: 1, dColumn: 0, name: 'S'},
-    SW: {dRow: 1, dColumn: -1, name: 'SW'},
-    W: {dRow: 0, dColumn: -1, name: 'W'},
-    NW: {dRow: -1, dColumn: -1, name: 'NW'}
-}
-
-const goDirection = (row, column, direction) => {
-    return [row + direction.dRow, column + direction.dColumn]
-}
-
-const turnDirectionRight90 = (direction) => {
-    switch(direction) { 
-        case DIRECTIONS.N:
-            return DIRECTIONS.E
-        case DIRECTIONS.NE:
-            return DIRECTIONS.SE
-        case DIRECTIONS.E:
-            return DIRECTIONS.S
-        case DIRECTIONS.SE:
-            return DIRECTIONS.SW
-        case DIRECTIONS.S:
-            return DIRECTIONS.W
-        case DIRECTIONS.SW:
-            return DIRECTIONS.NW
-        case DIRECTIONS.W:
-            return DIRECTIONS.N
-        case DIRECTIONS.NW:
-            return DIRECTIONS.NE
-    }
-}
-
 // grid of items
 // y on top
 // x,y coord = y row, x column
@@ -202,13 +166,6 @@ class Grid {
         this.internalDiagonalNeighbors = diagonalNeighbors
     }
 
-    duplicate() {
-        const newGrid = new Grid('')
-        newGrid.items = this.items.map(row => [...row])
-        newGrid.internalDiagonalNeighbors = this.internalDiagonalNeighbors
-        return newGrid
-    }
-
     get diagonalNeighbors() { 
         return this.internalDiagonalNeighbors
     }
@@ -219,7 +176,7 @@ class Grid {
 
     // item at row, column 
     at(row, column) {
-        return (this.items[row] || [])[column]
+        return this.items[row][column]
     }
 
     // set row y, column x to item
@@ -428,7 +385,4 @@ export default {
     Grid,
     SparseGrid,
     parseSeparatedSections,
-    DIRECTIONS,
-    turnDirectionRight90,
-    goDirection,
 };
