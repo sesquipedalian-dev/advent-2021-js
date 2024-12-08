@@ -18,12 +18,15 @@ const part2 = () => {
     return null;
 }
 
+const parse = (input) => { 
+    return input.split("\n").filter(n => n != '')
+}
 
 aoc.fetchDayCodes('{year}', '{day}').then(codes => { 
     console.log('all the codes', codes.map((c, i) => [c, i]));
     return;
 
-    const sample1 = codes[0].split("\\n").map(n => parseInt(n)).filter(n => n > 0);
+    const sample1 = parse(codes[0])
     const p1Answer = utils.parseAnswerFromEms(codes[codes.length - 1]);
     const samplePart1Answer = part1(sample1);
 
@@ -41,7 +44,7 @@ aoc.fetchDayCodes('{year}', '{day}').then(codes => {
 
     Promise.all([aoc.fetchDayInput('{year}', '{day}'), aoc.fetchDayAnswers('{year}', '{day}')]).then(([input, answers]) => {
 
-        const list_of_ints = utils.stringListToFirstInt(input.split("\\n"));
+        const list_of_ints = parse(input)
         const answer2 = part1(list_of_ints);
         let answer2Right;
         if (answers.length > 0) { 
