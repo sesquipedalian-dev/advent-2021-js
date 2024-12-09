@@ -1,25 +1,31 @@
 
+import { getPriority } from 'node:os';
 import aoc from '../../util/aoc.js';
 import utils from './utils.js';
 import fs from 'node:fs/promises';
 
 const print = ({blocks, gaps}) => { 
-    for (var i = 0; i < blocks.length; i++) {
+    console.log('printing', blocks, gaps)
+    for (var i = 0; i < Math.max(blocks.length, gaps.length); i++) {
         // first print block repr
-        for (var b = 0; b < blocks[i].size; b++) {
-            process.stdout.write(`${blocks[i].id}`)
+        if(i < blocks.length) { 
+            const len = blocks[i].origSize || blocks[i].size
+            for (var b = 0; b < len; b++) {
+                if (b < blocks[i].size) { 
+                  process.stdout.write(`${blocks[i].id}`)
+                } else { 
+                    process.stdout.write('.')
+                }
+            }
         }
 
-        // then gap
-        if (i >= gaps.length) {
-            continue 
-        }
-
-        for (var b = 0; b < gaps[i].size; b++) {
-            if (b < gaps[i].filled.length) { 
-                process.stdout.write(`${gaps[i].filled[b]}`)
-            } else { 
-                process.stdout.write('.')
+        if (i < gaps.length) { 
+            for (var b = 0; b < gaps[i].size; b++) {
+                if (b < gaps[i].filled.length) { 
+                    process.stdout.write(`${gaps[i].filled[b]}`)
+                } else { 
+                    process.stdout.write('.')
+                }
             }
         }
     }
@@ -29,24 +35,23 @@ const print = ({blocks, gaps}) => {
 const checksum = ({blocks, gaps}) => { 
     let checksum = 0
     let j = 0
-    for (var i = 0; i < blocks.length; i++) {
+    for (var i = 0; i < gaps.length; i++) {
         // first print block repr
-        for (var b = 0; b < blocks[i].size; b++) {
-            checksum += j * blocks[i].id
-            j++
+        if ( i < blocks.length) { 
+            for (var b = 0; b < blocks[i].size; b++) {
+                checksum += j * blocks[i].id
+                j++
+            }
         }
 
-        // then gap
-        if (i >= gaps.length) {
-            continue 
-        }
-
-        for (var b = 0; b < gaps[i].size; b++) {
-            if (b < gaps[i].filled.length) { 
-                checksum += j * gaps[i].filled[b]
-                j++
-            } else { 
-                j++
+        if (i < gaps.length) { 
+            for (var b = 0; b < gaps[i].size; b++) {
+                if (b < gaps[i].filled.length) { 
+                    checksum += j * gaps[i].filled[b]
+                    j++
+                } else { 
+                    j++
+                }
             }
         }
     }
@@ -54,6 +59,38 @@ const checksum = ({blocks, gaps}) => {
     return checksum
 }
 
+const checksum2 = (items) => { 
+    let j = 0
+    let checksum = 0
+   
+    for (var i = 0; i < items.length; i++) {
+        let f = '.'
+        if(items[i].block || items[i].fill) { 
+            f = `${items[i].id}`
+        } 
+        for (var b = 0; b < items[i].size; b++) { 
+            if (f != '.') { 
+                checksum += j * items[i].id
+            }
+            j++
+        }
+    }
+    return checksum
+}
+
+const print2 = (items) => { 
+    console.log('printing', items)
+    for (var i = 0; i < items.length; i++) {
+        let f = '.'
+        if(items[i].block || items[i].fill) { 
+            f = `${items[i].id}`
+        } 
+        for (var b = 0; b < items[i].size; b++) { 
+            process.stdout.write(f)
+        }
+    }
+    process.stdout.write('\n')
+}
 const part1 = ({blocks, gaps}) => {
     // print({blocks, gaps})
 
@@ -88,8 +125,58 @@ const part1 = ({blocks, gaps}) => {
     return checksum({blocks, gaps})
 }
 
-const part2 = () => {
-    return null;
+const part2 = ({blocks, gaps}) => {
+    // print({blocks, gaps})
+
+    // this will work easier if we switch it back to a single list
+    // each item is either a block or a gap
+    // and moving a block changes it into a gap
+    // in cases where a block fits into a bigger gap, split it into a new gap 
+    // with the remainder
+
+    let items = []
+    for (var i = 0; i < blocks.length; i++) { 
+        items.push({...blocks[i], block: true})
+        items.push({...gaps[i], gap: true})
+    }
+
+    for (var i = items.length - 1; i >= 0; i--) { 
+        // if this is a block, look for possible gaps to its left
+        if (items[i].block) { 
+            for (var j = 0; j < i; j++) { 
+                if(items[j].gap && items[j].size >= items[i].size) {
+                    const fill = { fill: true, size: items[i].size, id: items[i].id}
+                    if(items[j].size > items[i].size) { 
+                        // there will be leftover room, replace gap with 
+                        // 'filled in' + new, smaller gap
+                        items = [
+                            ...items.slice(0, j), 
+                            fill,
+                            {gap: true, size: items[j].size - items[i].size},
+                            ...items.slice(j+1, i), 
+                            {gap: true, size: items[i].size},
+                            ...items.slice(i+1)
+                        ]
+                        i += 1
+                    } else { 
+                        // otherwise just replace me with 'filled in'
+                        items = [
+                            ...items.slice(0, j), 
+                            fill,
+                            ...items.slice(j+1, i), 
+                            {gap: true, size: items[i].size},
+                            ...items.slice(i+1)
+                        ]
+                    }
+                    // print2(items)
+                    break
+                }
+            }
+        }
+    }
+
+    // print2(items)
+    return checksum2(items)
 }
 
 const parse = (input) => { 
@@ -132,12 +219,12 @@ aoc.fetchDayCodes('2024', '9').then(codes => {
     }
     // return
 
-    // const part2Answer = part2(sample1);
-    // const part2Correct = utils.parseAnswerFromEms(codes[codes.length - 1]);
-    // if (part2Answer != part2Correct) {
-    //     console.log('failed on part 2 test case', part2Answer, part2Correct);
-    //     return;
-    // }
+    const part2Answer = part2(parse(codes[0]))
+    const part2Correct = utils.parseAnswerFromEms(codes[25]);
+    if (part2Answer != part2Correct) {
+        console.log('failed on part 2 test case', part2Answer, part2Correct);
+        return;
+    }
 
     Promise.all([aoc.fetchDayInput('2024', '9'), aoc.fetchDayAnswers('2024', '9')]).then(async ([_, answers]) => {
         const input = await fs.readFile('./2024/day9/input.txt', {encoding: 'utf8'})
@@ -149,12 +236,12 @@ aoc.fetchDayCodes('2024', '9').then(codes => {
         }
         console.log('part 1 answer', Number.MAX_SAFE_INTEGER, answer2, answer2Right);
 
-        // const answer3 = part2(list_of_ints);
-        // let answer3Right;
-        // if (answers.length > 1) { 
-        //     answer3Right = answers[1] == answer3.toString();
-        // }
-        // console.log('part 2 answer', answer3, answer3Right);
+        const answer3 = part2(parse(input));
+        let answer3Right;
+        if (answers.length > 1) { 
+            answer3Right = answers[1] == answer3.toString();
+        }
+        console.log('part 2 answer', answer3, answer3Right);
     });
 })
 
