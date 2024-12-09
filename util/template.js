@@ -19,7 +19,7 @@ const part2 = () => {
 }
 
 const parse = (input) => { 
-    return input.split("\n").filter(n => n != '')
+    return input.split("\\n").filter(n => n != '')
 }
 
 aoc.fetchDayCodes('{year}', '{day}').then(codes => { 

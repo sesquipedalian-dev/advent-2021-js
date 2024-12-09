@@ -133,3 +133,6 @@ dist
 token.txt
 *.log
 *.txt
+
+# AOC asks we not check in inputs
+**/input.txt
