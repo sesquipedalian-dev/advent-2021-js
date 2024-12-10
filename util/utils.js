@@ -289,7 +289,7 @@ class Grid {
             newRow(row)
             for (let column = 0; column < startingCols; column += 1) { 
                 const item = this.at(row, column)
-                if (!skipNull || item) {
+                if (!skipNull || (item !== undefined)) {
                     entry(row, column, this.at(row, column))
                 }
             }
