@@ -3,95 +3,64 @@ import aoc from '../../util/aoc.js';
 import utils from './utils.js';
 
 const part1 = (machines) => {
-    const maxPress = 100
-    // console.log('part1 start', JSON.stringify(machines))
-
-    // so for each machine we're going to develop a 2d matrix, 
-    // where X is the times A is pressed and Y is the times B is pressed
-    // and m[x][y] = [A.x * x + B.x * y, A.y * y + B.y * y]
-    // we'll calculate this through the max button presses (100)
-    // and keep track of the minimum cost of places that exactly reach
-    // the prize X/Y
-    // I guess we don't really need the matrix though
+    // so these are pairs of linear equations
+    // if X is the count of A button presses and Y is the count of B button presses
+    // we want to find X and Y such that e.g.
+    // 94x + 22y = 8400
+    // 34x + 67y = 5400
+    // solve the first for X
+    // x = 8400/94 - 22y/94
+    // plugin that in to the second
+    // 34*8400/94 - 34*22y/94 + 67y = 5400
+    // y(67 - 34*22/94) = 5400 - 34*8400/94
+    // y = (5400 - 34*8400/94) / (67 - 22*34/94)
+    // and then you can solve the origin al X
+    // due to the vagaries of floating point, we should Math.round
+    // we check if the results work out to the expect numbers as well.
+    // if not, the prize is not solvable.
 
     let sum = 0
     machines.forEach(machine => { 
-        if(!machine.a) { 
-            return 
+        if (!machine.a) { 
+            return
         }
-        // const locations = utils.initArray(maxPress, () => initArray(maxPress))
-        let minCost = Number.MAX_SAFE_INTEGER
-        for(var x = 0; x < maxPress; x++) {
-            for (var y = 0; y < maxPress; y++) { 
-                // console.log('machine', machine, machine.a, machine['a'])
-                if(
-                    (x*machine.a.x + y*machine.b.x) == machine.prize.x && 
-                    (x*machine.a.y + y*machine.b.y) == machine.prize.y
-                ) {
-                    // console.log('candidate', x, y, machine, minCost, cost)
-                    const cost = (x * 3) + y
-                    minCost = cost < minCost ? cost : minCost
-                }
-            }
+
+        const y = Math.round((machine.prize.y - machine.a.y*machine.prize.x / machine.a.x) / (machine.b.y - machine.b.x*machine.a.y/machine.a.x))
+        const x = Math.round((machine.prize.x / machine.a.x) - (machine.b.x * y / machine.a.x))
+        // console.log('system of equations', JSON.stringify(machine), x, y)
+        if(
+            Math.round(x * machine.a.x + y * machine.b.x) == machine.prize.x &&
+            Math.round(x * machine.a.y + y * machine.b.y) == machine.prize.y
+        ) {
+            sum += x * 3 + y
         }
-        sum += minCost != Number.MAX_SAFE_INTEGER ? minCost : 0
+
     })
-    return sum;
+    return sum
 }
 
 const part2 = (machines) => {
-    // so for this one, can we establish a MIN bound on A & B presses to get near the number?
-    // for whichever prize level (x or y) is higher, and whichever button press 
-    // increases that number faster, that would be a min bound
-    // no this doesn't really make sense because the minPress is only one of the buttons, not both 
-    
-    const maxPress = 500000000000
-    const modifier = 10000000000000
+    // same as part 1, but increase the prize points
     let sum = 0
     machines.forEach(machine => { 
-        if(!machine.a) { 
-            return 
+        if (!machine.a) { 
+            return
         }
-        
-        // min bound?
-        let minPress
-        let isAMin = true
-        if(machine.prize.x > machine.prize.y) {
-            if(machine.a.x > machine.b.x) { 
-                minPress = Math.ceil((machine.prize.x + modifier) / machine.a.x)
-            } else { 
-                minPress = Math.ceil((machine.prize.x  +modifier) / machine.b.x)
-                isAMin = false
-            }
-        } else { 
-            if(machine.a.y > machine.b.y) {
-                minPress = Math.ceil((machine.prize.y + modifier) / machine.a.y)
-            } else { 
-                minPress = Math.ceil((machine.prize.y + modifier) / machine.b.y)
-                isAMin = false
-            }
+
+        machine.prize.x += 10000000000000
+        machine.prize.y += 10000000000000
+        const y = Math.round((machine.prize.y - machine.a.y*machine.prize.x / machine.a.x) / (machine.b.y - machine.b.x*machine.a.y/machine.a.x))
+        const x = Math.round((machine.prize.x / machine.a.x) - (machine.b.x * y / machine.a.x))
+        // console.log('system of equations', JSON.stringify(machine), x, y)
+        if(
+            Math.round(x * machine.a.x + y * machine.b.x) == machine.prize.x &&
+            Math.round(x * machine.a.y + y * machine.b.y) == machine.prize.y
+        ) {
+            sum += x * 3 + y
         }
-        console.log('minPress', minPress)
-        let minCost = Number.MAX_SAFE_INTEGER
-        for(var x = isAMin ? minPress : 0; x < isAMin ? minPress+100 : 100; x++) {
-            for (var y = isAMin ? 0 : minPress; y < isAMin ? 100 : minPress+100; y++) { 
-                // console.log('machine', machine, machine.a, machine['a'])
-                const tX = x*machine.a.x + y*machine.b.x
-                const tY = x*machine.a.y + y*machine.b.y
-                // abandon branches that exceed the target
-                if(tX > machine.prize.x+modifier || tY > machine.prize.y+modifier) {
-                    break
-                }
-                if(tX == machine.prize.x + modifier && tY == machine.prize.y + modifier) {
-                    console.log('candidate', x, y, machine, minCost, cost)
-                    const cost = (x * 3) + y
-                    minCost = cost < minCost ? cost : minCost
-                }
-            }
-        }
-        sum += minCost != Number.MAX_SAFE_INTEGER ? minCost : 0
+
     })
-    return sum;
+    return sum
 }
 
 const buttonRegex = /Button (A|B): X\+(\d+), Y\+(\d+)/
