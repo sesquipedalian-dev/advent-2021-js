@@ -196,9 +196,9 @@ class Grid {
     // construct from a single string, each line will be a row and each {separator}-separated character string will be an entry
     // lines - the string
     // separator - separator between entries within a row (e.g. '' to split on every char)
-    // parse - parse individual entries, e.g. parseInt
+    // parse - parse individual entries, e.g. parseInt. May return multiple entries.
     constructor(lines, separator=/\s+/, parse=(e) => e, diagonalNeighbors=false) {
-        this.items = lines.split('\n').filter(n => n != '').map(l => stripEms(l).split(separator).filter(n => n != '').map(s => parse(s)))
+        this.items = lines.split('\n').filter(n => n != '').map((l, row) => stripEms(l).split(separator).filter(n => n != '').flatMap((s, column) => parse(s, row, column)))
         this.internalDiagonalNeighbors = diagonalNeighbors
     }
 
@@ -301,8 +301,8 @@ class Grid {
     }
 
     // print out the grid, space separated
-    print() {
-        this.iterate((_r, _c, i) => process.stdout.write(`${i} `), () => process.stdout.write("\n"))
+    print(transformItem=(_r, _c, item) => item) {
+        this.iterate((r, c, i) => process.stdout.write(`${transformItem(r, c, i)} `), () => process.stdout.write("\n"))
         process.stdout.write("\n")
     } 
 
