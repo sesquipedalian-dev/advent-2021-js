@@ -169,23 +169,44 @@ const goDirection = (row, column, direction) => {
 }
 
 const turnDirectionRight90 = (direction) => {
-    switch(direction) { 
-        case DIRECTIONS.N:
+    switch(direction.name) { 
+        case DIRECTIONS.N.name:
             return DIRECTIONS.E
-        case DIRECTIONS.NE:
+        case DIRECTIONS.NE.name:
             return DIRECTIONS.SE
-        case DIRECTIONS.E:
+        case DIRECTIONS.E.name:
             return DIRECTIONS.S
-        case DIRECTIONS.SE:
+        case DIRECTIONS.SE.name:
             return DIRECTIONS.SW
-        case DIRECTIONS.S:
+        case DIRECTIONS.S.name:
             return DIRECTIONS.W
-        case DIRECTIONS.SW:
+        case DIRECTIONS.SW.name:
             return DIRECTIONS.NW
-        case DIRECTIONS.W:
+        case DIRECTIONS.W.name:
             return DIRECTIONS.N
-        case DIRECTIONS.NW:
+        case DIRECTIONS.NW.name:
             return DIRECTIONS.NE
+    }
+}
+
+const turnDirectionLeft90 = (direction) => {
+    switch(direction.name) { 
+        case DIRECTIONS.N.name:
+            return DIRECTIONS.W
+        case DIRECTIONS.NE.name:
+            return DIRECTIONS.NW
+        case DIRECTIONS.E.name:
+            return DIRECTIONS.N
+        case DIRECTIONS.SE.name:
+            return DIRECTIONS.NE
+        case DIRECTIONS.S.name:
+            return DIRECTIONS.E
+        case DIRECTIONS.SW.name:
+            return DIRECTIONS.SE
+        case DIRECTIONS.W.name:
+            return DIRECTIONS.S
+        case DIRECTIONS.NW.name:
+            return DIRECTIONS.SW
     }
 }
 
@@ -431,4 +452,5 @@ export default {
     DIRECTIONS,
     turnDirectionRight90,
     goDirection,
+    turnDirectionLeft90,
 };
